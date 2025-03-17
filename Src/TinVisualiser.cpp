@@ -64,7 +64,7 @@ int main(int argc, char ** argv)
 	QApplication app(argc, argv);
 	initTranslations(app);
 	MainWindow wnd;
-	
+
 	// If a filename was given on the command line, load it:
 	const auto args = app.arguments();
 	auto numArgs = args.size();
@@ -75,7 +75,8 @@ int main(int argc, char ** argv)
 			wnd.openSpecifiedFile(args[i]);
 		}
 	}
-	
+
 	wnd.showMaximized();
+	wnd.zoomAll();
 	return app.exec();
 }

@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget * aParent):
 {
 	mUI->setupUi(this);
 	mUI->gvMain->setScene(&mGraphicsScene);
-	
+	mUI->gvMain->setDragMode(QGraphicsView::ScrollHandDrag);
+
 	// Connect the signals and slots:
 	connect(mUI->actFileNew,    &QAction::triggered, this, &MainWindow::newFile);
 	connect(mUI->actFileOpen,   &QAction::triggered, this, &MainWindow::openFile);
@@ -25,6 +26,9 @@ MainWindow::MainWindow(QWidget * aParent):
 	connect(mUI->actFileSaveAs, &QAction::triggered, this, &MainWindow::saveFileAs);
 	connect(mUI->actFileImport, &QAction::triggered, this, &MainWindow::importFile);
 	connect(mUI->actExit,       &QAction::triggered, this, &MainWindow::close);
+	connect(mUI->actZoomIn,     &QAction::triggered, this, &MainWindow::zoomIn);
+	connect(mUI->actZoomOut,    &QAction::triggered, this, &MainWindow::zoomOut);
+	connect(mUI->actZoomAll,    &QAction::triggered, this, &MainWindow::zoomAll);
 }
 
 
@@ -87,7 +91,7 @@ TinData MainWindow::loadTinDataFromFile(const QString & aFileName)
 	}
 	auto probe = f.read(4096);
 	f.seek(0);
-	
+
 	// Try to detect the format:
 	TinData data;
 	if (TinDataLoader::doesProbeMatch(probe))
@@ -110,13 +114,35 @@ TinData MainWindow::loadTinDataFromFile(const QString & aFileName)
 
 
 
+void MainWindow::rebuildScene()
+{
+	mGraphicsScene.clear();
+	for (const auto & pt: mTinData.points())
+	{
+		mGraphicsScene.addRect(pt->mX, -pt->mY, 5, 5);
+	}
+	for (const auto & constraint: mTinData.constraints())
+	{
+		auto pt1 = constraint->point1();
+		auto pt2 = constraint->point2();
+		mGraphicsScene.addLine(
+			pt1->mX, -pt1->mY,
+			pt2->mX, -pt2->mY
+		);
+	}
+}
+
+
+
+
+
 void MainWindow::newFile()
 {
 	if (!askSaveCurrentData())
 	{
 		return;
 	}
-	
+
 	mTinData.clear();
 	mFileName.clear();
 }
@@ -163,7 +189,9 @@ void MainWindow::openSpecifiedFile(const QString & aFileName)
 		return;
 	}
 	mFileName = aFileName;
+	rebuildScene();
 	updateTitle();
+	zoomAll();
 }
 
 
@@ -188,7 +216,7 @@ void MainWindow::saveFile()
 
 
 void MainWindow::saveFileAs()
-{	
+{
 	auto fileName = QFileDialog::getSaveFileName(
 		this,                   // Parent widget
 		tr("Save TIN data"),    // Title
@@ -255,6 +283,8 @@ void MainWindow::importFile()
 			)
 		);
 	}
+	rebuildScene();
+	zoomAll();
 }
 
 
@@ -271,4 +301,62 @@ void MainWindow::updateTitle()
 	{
 		this->setWindowTitle(tr("TinVisualiser: %1").arg(mFileName));
 	}
+}
+
+
+
+
+
+void MainWindow::zoomIn()
+{
+	mUI->gvMain->scale(mUI->gvMain->mZoomFactor, mUI->gvMain->mZoomFactor);
+}
+
+
+
+
+
+void MainWindow::zoomOut()
+{
+	mUI->gvMain->scale(1 / mUI->gvMain->mZoomFactor, 1 / mUI->gvMain->mZoomFactor);
+}
+
+
+
+
+
+void MainWindow::zoomAll()
+{
+	// If there are no points, there's nothing to zoom to:
+	if (mTinData.points().empty())
+	{
+		return;
+	}
+
+	// Get the data extents:
+	double minX = mTinData.points()[0]->mX, maxX = minX;
+	double minY = -mTinData.points()[0]->mY, maxY = minY;
+	for (const auto & pt: mTinData.points())
+	{
+		auto x = pt->mX, y = -pt->mY;
+		if (x < minX)
+		{
+			minX = x;
+		}
+		if (x > maxX)
+		{
+			maxX = x;
+		}
+		if (y < minY)
+		{
+			minY = y;
+		}
+		if (y > maxY)
+		{
+			maxY = y;
+		}
+	}
+
+	// Zoom:
+	mUI->gvMain->fitInView(minX, minY, maxX - minX, maxY - minY, Qt::KeepAspectRatio);
 }

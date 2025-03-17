@@ -34,7 +34,7 @@ void TinDataSaver::saveTo(const TinData & aData, QIODevice & aDest)
 {
 	auto crlf = QByteArray::fromRawData("\r\n", 2);
 	auto tab = QByteArray::fromRawData("\t", 1);
-	
+
 	// Write the points:
 	aDest.write(QByteArray::number(aData.points().size()));
 	aDest.write(crlf);
@@ -50,7 +50,7 @@ void TinDataSaver::saveTo(const TinData & aData, QIODevice & aDest)
 		aDest.write(crlf);
 		pointIndexMap[pt.get()] = idx++;
 	}
-	
+
 	// Write the constraints:
 	aDest.write(QByteArray::number(aData.constraints().size()));
 	for (const auto & constraint: aData.constraints())

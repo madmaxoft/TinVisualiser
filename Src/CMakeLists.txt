@@ -1,9 +1,18 @@
+# As moc files are generated in the binary dir, tell CMake
+# to always look for includes there:
+set (CMAKE_INCLUDE_CURRENT_DIR ON)
+
+
+
+
+
 set(SOURCES
 	MainWindow.cpp
 	TinData.cpp
 	TinDataLoader.cpp
 	TinDataSaver.cpp
 	TinVisualiser.cpp
+	ZoomingGraphicsView.cpp
 )
 
 set(HEADERS
@@ -11,6 +20,7 @@ set(HEADERS
 	TinData.hpp
 	TinDataLoader.hpp
 	TinDataSaver.hpp
+	ZoomingGraphicsView.hpp
 )
 
 set(UI

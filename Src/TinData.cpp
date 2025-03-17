@@ -14,7 +14,7 @@ void TinData::Point::addNeighborConstraint(std::shared_ptr<Edge> & aConstraint)
 	// Check that the constraint doesn't already exist:
 	auto pt2 = aConstraint->theOtherPoint(this).lock();
 	assert(constraintTo(pt2.get()).lock() == nullptr);
-	
+
 	// Add the constraint:
 	mNeighborConstraints.push_back(aConstraint);
 }
@@ -82,7 +82,7 @@ std::shared_ptr<TinData::Edge> TinData::addConstraint(
 		return constraint;
 	}
 	assert(aPoint2->constraintTo(aPoint1.get()).lock() == nullptr);
-	
+
 	// Add the constraint:
 	constraint = std::make_shared<Edge>(aPoint1, aPoint2);
 	aPoint1->addNeighborConstraint(constraint);

@@ -18,7 +18,7 @@ class Error:
 {
 	/** The line number where the error was encountered. */
 	int mLineNum;
-	
+
 public:
 
 	Error(const char * aMessage, int aLineNum):

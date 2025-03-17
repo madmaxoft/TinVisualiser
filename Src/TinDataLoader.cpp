@@ -36,7 +36,7 @@ bool TinDataLoader::doesProbeMatch(const QByteArray & aProbe)
 			}
 		}
 	}
-	
+
 	// Check that the first line is a reasonable integer:
 	auto idxNewline = aProbe.indexOf('\n');
 	if (idxNewline < 0)
@@ -49,7 +49,7 @@ bool TinDataLoader::doesProbeMatch(const QByteArray & aProbe)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -89,7 +89,7 @@ TinData TinDataLoader::loadFrom(QIODevice & aDataSource)
 		}
 		res.addPoint(coords[0], coords[1], coords[2]);
 	}
-	
+
 	// Load the constraints:
 	auto lineNum = numPoints + 2;
 	auto numConstraintsLine = aDataSource.readLine().trimmed();
