@@ -1,0 +1,6 @@
+# QT Creator per-user files:
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+# QT Creator autosave files:
+*.autosave
